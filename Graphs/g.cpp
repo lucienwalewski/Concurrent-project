@@ -8,46 +8,58 @@
 #include <set>
 #include <map>
 #include <limits>
+#include <string>
+#include <fstream>
+#include <sstream>
+using namespace std;
+
 #define INF std::numeric_limits<int>::max()
 
 typedef int Edge;
 
+//////////////////////////////////////// VERTEX CLASS ////////////////////////////////////////
 class Vertex
 {
 public:
     int value;
     std::map<Vertex *, Edge> adjacency_list;
-    
-    Vertex(int x){
+
+    Vertex(int x)
+    {
         this->value = x;
     }
 
     void link_to(Vertex *vertex, Edge weight);
 };
 
-void Vertex::link_to(Vertex *vertex, Edge weight) {
+void Vertex::link_to(Vertex *vertex, Edge weight)
+{
     std::map<Vertex *, Edge>::iterator it = this->adjacency_list.find(vertex);
-    if (it == this->adjacency_list.end()) {
+    if (it == this->adjacency_list.end())
+    {
         this->adjacency_list.insert(std::pair<Vertex *, Edge>(vertex, weight));
-    } else {
+    }
+    else
+    {
         std::cout << "Already existing edge between vertex " << this->value << " and vertex " << vertex->value << "." << std::endl;
+        std::cout << "Weight: " << weight << std::endl;
         // If the vertex is already in the adjacency_list, it does nothing.
     }
 }
 
-
-
-
+//////////////////////////////////////// GRAPH CLASS ////////////////////////////////////////
 class Graph
 {
 public:
     int num_vertices;
     std::vector<Vertex *> vertices;
-    
-    Graph(int x) {
+
+    Graph(int x)
+    {
         this->num_vertices = x;
         Vertex *vertex;
-        for (int i = 0; i < this->num_vertices; i++){
+        for (int i = 0; i < this->num_vertices; i++)
+        {
             vertex = new Vertex(i);
             this->vertices.push_back(vertex);
         }
@@ -58,47 +70,140 @@ public:
     std::vector<int> neighbors(int value);
 };
 
-void Graph::add_edge(int from, int to, Edge weight) {
+void Graph::add_edge(int from, int to, Edge weight)
+{
+    // std::cout << from << " " << to << " " << weight << std::endl;
     this->vertices[from]->link_to(this->vertices[to], weight);
 }
 
-Edge Graph::get_edge_value(int from, int to) {
+Edge Graph::get_edge_value(int from, int to)
+{
     std::map<Vertex *, Edge>::iterator it = this->vertices[from]->adjacency_list.find(vertices[to]);
-    if (it != this->vertices[from]->adjacency_list.end()) {
+    if (it != this->vertices[from]->adjacency_list.end())
+    {
         return it->second;
-    } else {
+    }
+    else
+    {
         std::cout << "No existing edge between vertex " << from << " and vertex " << to << "." << std::endl;
         return INF;
     }
 }
 
-std::vector<int> Graph::neighbors(int value){
+std::vector<int> Graph::neighbors(int value)
+{
     std::vector<int> list_neighbors;
-    for (std::map<Vertex *, Edge>::iterator it = this->vertices[value]->adjacency_list.begin(); it != this->vertices[value]->adjacency_list.end(); it++) {
+    for (std::map<Vertex *, Edge>::iterator it = this->vertices[value]->adjacency_list.begin(); it != this->vertices[value]->adjacency_list.end(); it++)
+    {
         list_neighbors.push_back(it->first->value);
     }
     return list_neighbors;
 }
 
+//////////////////////////////////////// IMPORT GRAPH ////////////////////////////////////////
+Graph *import_graph(std::string filename, bool directed, bool weighted, bool zero_is_vertex)
+{
+    filename = "../text_files/" + filename;
+    const char *input = filename.c_str();
+    ifstream file(input);
+    Graph *graph;
+    int num_vertices, num_edges;
+    int u, v;
+    // int max;
+    if (file >> num_vertices >> num_edges)
+    {
+        graph = new Graph(num_vertices);
+        // std::cout << "Graph created" << std::endl;
+        if (weighted)
+        {
+            int w;
+            for (int i = 0; i < num_edges; i++)
+            {
+                file >> u >> v >> w;
+                // std::cout << u << v << w << std::endl;
+                if (zero_is_vertex)
+                {
+                    graph->add_edge(u, v, w);
+                }
+                else
+                {
+                    graph->add_edge(u - 1, v - 1, w);
+                }
+                if (!directed)
+                {
+                    if (zero_is_vertex)
+                    {
+                        graph->add_edge(v, u, w);
+                    }
+                    else
+                    {
+                        graph->add_edge(v - 1, u - 1, w);
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < num_edges; i++)
+            {
+                file >> u >> v;
+                /*
+                if (u > max) {
+                    max = u;
+                }
+                if (v > max) {
+                    max = v;
+                }
+                */
+                // std::cout << u << " " << v << std::endl;
+                if (zero_is_vertex)
+                {
+                    graph->add_edge(u, v, 1);
+                }
+                else
+                {
+                    graph->add_edge(u - 1, v - 1, 1);
+                }
+                if (!directed)
+                {
+                    if (zero_is_vertex)
+                    {
+                        graph->add_edge(v, u, 1);
+                    }
+                    else
+                    {
+                        graph->add_edge(v - 1, u - 1, 1);
+                    }
+                }
+            }
+        }
+    }
+    // std::cout << max << std::endl;
+    file.close();
+    return graph;
+}
 
-
-
-std::vector<int> dijkstra(Graph *graph, int source) {
+//////////////////////////////////////// DIJKSTRA SEQUENTIAL ////////////////////////////////////////
+std::vector<int> dijkstra(Graph *graph, int source)
+{
     std::vector<int> dist(graph->num_vertices, INF);
     std::set<std::pair<int, int> > s;
 
     dist[source] = 0;
     s.insert(std::pair<int, int>(dist[source], source));
 
-    while (!s.empty()) {
+    while (!s.empty())
+    {
         std::pair<int, int> now = *s.begin();
         s.erase(s.begin());
 
         int d = now.first;
         int v = now.second;
 
-        for (std::map<Vertex *, Edge>::iterator it = graph->vertices[v]->adjacency_list.begin(); it != graph->vertices[v]->adjacency_list.end(); it++) {
-            if (d + it->second < dist[it->first->value]) {
+        for (std::map<Vertex *, Edge>::iterator it = graph->vertices[v]->adjacency_list.begin(); it != graph->vertices[v]->adjacency_list.end(); it++)
+        {
+            if (d + it->second < dist[it->first->value])
+            {
                 s.erase(std::pair<int, int>(dist[it->first->value], it->first->value));
                 dist[it->first->value] = d + it->second;
                 s.insert(std::pair<int, int>(dist[it->first->value], it->first->value));
@@ -108,16 +213,11 @@ std::vector<int> dijkstra(Graph *graph, int source) {
     return dist;
 }
 
-
-
 int main()
 {
-    std::cout << "I love this project!" <<  std::endl;
-
+    /*
+    //////////////////////////////////////// SIMPLE TESTS ////////////////////////////////////////
     Graph *g = new Graph(3);
-    std::cout << g->vertices[0]->value << std::endl;
-    std::cout << g->vertices[1]->value << std::endl;
-    std::cout << g->vertices[2]->value << std::endl;
     g->add_edge(0, 1, 3);
     g->add_edge(0, 1, 3);
     g->add_edge(1, 2, 2);
@@ -129,5 +229,18 @@ int main()
     std::cout << a[0] << " " << a[1] << " " << a[2] << std::endl;
     a = dijkstra(g, 2);
     std::cout << a[0] << " " << a[1] << " " << a[2] << std::endl;
+    */
+
+    //////////////////////////////////////// TEXAS GRAPH ////////////////////////////////////////
+
+    std::cout << "Create Texas Graph" << std::endl;
+    Graph *g1 = import_graph("1e6v_3e6e_d_uw.txt", true, false, true);
+    std::cout << "Run Dijkstra" << std::endl;
+    std::vector<int> result = dijkstra(g1, 0);
+    for (int i = 0; i < 5; i++)
+    {
+        std::cout << result[i] << std::endl;
+    }
+
     return 0;
 }
