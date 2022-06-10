@@ -639,7 +639,7 @@ int main()
     int source = 0;
     int threads = 2;
     std::cout << "Create Graph" << std::endl;
-    Graph *g1 = import_graph("final.txt", true, true, false);
+    Graph *g1 = import_graph("test_graph.txt", true, true, false);
     test(g1, delta, source, threads);
 
     return 0;
