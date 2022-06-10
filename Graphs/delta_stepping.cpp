@@ -1,191 +1,6 @@
-#include <vector>
-#include <iostream>
-#include <algorithm>
-#include <atomic>
-#include <mutex>
-#include <thread>
-#include <condition_variable>
-#include <queue>
-#include <set>
-#include <map>
-#include <limits>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <chrono>
+#include "graph.cpp"
 
-using namespace std;
 
-#define INF std::numeric_limits<int>::max()
-
-typedef int Edge;
-
-//////////////////////////////////////// VERTEX CLASS ////////////////////////////////////////
-class Vertex
-{
-public:
-    int value;
-    std::map<Vertex *, Edge> adjacency_list;
-
-    Vertex(int x)
-    {
-        this->value = x;
-    }
-
-    void link_to(Vertex *vertex, Edge weight);
-};
-
-void Vertex::link_to(Vertex *vertex, Edge weight)
-{
-    std::map<Vertex *, Edge>::iterator it = this->adjacency_list.find(vertex);
-    if (it == this->adjacency_list.end())
-    {
-        this->adjacency_list.insert(std::pair<Vertex *, Edge>(vertex, weight));
-    }
-    else
-    {
-        std::cout << "Already existing edge between vertex " << this->value << " and vertex " << vertex->value << "." << std::endl;
-        std::cout << "Weight: " << weight << std::endl;
-        // If the vertex is already in the adjacency_list, it does nothing.
-    }
-}
-
-//////////////////////////////////////// GRAPH CLASS ////////////////////////////////////////
-class Graph
-{
-public:
-    int num_vertices;
-    std::vector<Vertex *> vertices;
-    Graph(){};
-
-    Graph(int x)
-    {
-        this->num_vertices = x;
-        Vertex *vertex;
-        for (int i = 0; i < this->num_vertices; i++)
-        {
-            vertex = new Vertex(i);
-            this->vertices.push_back(vertex);
-        }
-    };
-
-    void add_edge(int from, int to, Edge weight);
-    Edge get_edge_value(int from, int to);
-    std::vector<int> neighbors(int value);
-};
-
-void Graph::add_edge(int from, int to, Edge weight)
-{
-    // std::cout << from << " " << to << " " << weight << std::endl;
-    this->vertices[from]->link_to(this->vertices[to], weight);
-}
-
-Edge Graph::get_edge_value(int from, int to)
-{
-    std::map<Vertex *, Edge>::iterator it = this->vertices[from]->adjacency_list.find(vertices[to]);
-    if (it != this->vertices[from]->adjacency_list.end())
-    {
-        return it->second;
-    }
-    else
-    {
-        std::cout << "No existing edge between vertex " << from << " and vertex " << to << "." << std::endl;
-        return INF;
-    }
-}
-
-std::vector<int> Graph::neighbors(int value)
-{
-    std::vector<int> list_neighbors;
-    for (std::map<Vertex *, Edge>::iterator it = this->vertices[value]->adjacency_list.begin(); it != this->vertices[value]->adjacency_list.end(); it++)
-    {
-        list_neighbors.push_back(it->first->value);
-    }
-    return list_neighbors;
-}
-
-//////////////////////////////////////// IMPORT GRAPH ////////////////////////////////////////
-Graph *import_graph(std::string filename, bool directed, bool weighted, bool zero_is_vertex)
-{
-    filename = "../text_files/" + filename;
-    const char *input = filename.c_str();
-    ifstream file(input);
-    Graph *graph;
-    int num_vertices, num_edges;
-    int u, v;
-    // int max;
-    if (file >> num_vertices >> num_edges)
-    {
-        graph = new Graph(num_vertices);
-        // std::cout << "Graph created" << std::endl;
-        if (weighted)
-        {
-            int w;
-            for (int i = 0; i < num_edges; i++)
-            {
-                file >> u >> v >> w;
-                // std::cout << u << v << w << std::endl;
-                if (zero_is_vertex)
-                {
-                    graph->add_edge(u, v, w);
-                }
-                else
-                {
-                    graph->add_edge(u - 1, v - 1, w);
-                }
-                if (!directed)
-                {
-                    if (zero_is_vertex)
-                    {
-                        graph->add_edge(v, u, w);
-                    }
-                    else
-                    {
-                        graph->add_edge(v - 1, u - 1, w);
-                    }
-                }
-            }
-        }
-        else
-        {
-            for (int i = 0; i < num_edges; i++)
-            {
-                file >> u >> v;
-                /*
-                if (u > max) {
-                    max = u;
-                }
-                if (v > max) {
-                    max = v;
-                }
-                */
-                // std::cout << u << " " << v << std::endl;
-                if (zero_is_vertex)
-                {
-                    graph->add_edge(u, v, 1);
-                }
-                else
-                {
-                    graph->add_edge(u - 1, v - 1, 1);
-                }
-                if (!directed)
-                {
-                    if (zero_is_vertex)
-                    {
-                        graph->add_edge(v, u, 1);
-                    }
-                    else
-                    {
-                        graph->add_edge(v - 1, u - 1, 1);
-                    }
-                }
-            }
-        }
-    }
-    // std::cout << max << std::endl;
-    file.close();
-    return graph;
-}
 
 // delta stepping algorithm as presented in this paper : https://www.researchgate.net/publication/222719985_Delta-stepping_a_parallelizable_shortest_path_algorithm
 class Delta_stepping
@@ -549,30 +364,29 @@ public:
 };
 
 //////////////////////////////////////// DIJKSTRA SEQUENTIAL ////////////////////////////////////////
-std::vector<int> dijkstra(Graph *graph, int source) {
-    // Vector of distances from source to every vertex
+std::vector<int> dijkstra(Graph *graph, int source)
+{
     std::vector<int> dist(graph->num_vertices, INF);
+    std::set<std::pair<int, int>> s;
+
     dist[source] = 0;
+    s.insert(std::pair<int, int>(dist[source], source));
 
-    // Initialise priority queue
-    std::set<std::pair<int, int>> queue;
-    queue.insert(std::pair<int, int>(dist[source], source));
+    while (!s.empty())
+    {
+        std::pair<int, int> now = *s.begin();
+        s.erase(s.begin());
 
-    // While queue is not empty
-    while (!queue.empty()) {
-        // Get distance, vertex pair with minimum distance
-        auto[d, u] = *queue.begin();
-        queue.erase(queue.begin());
+        int d = now.first;
+        int v = now.second;
 
-        // Relax all edges from u
-        for (auto&[v, e] : graph->vertices[u]->adjacency_list) {
-            if (d + e < dist[v->value]) {
-                // Remove old edge from queue
-                queue.erase(std::pair<int, int>(dist[v->value], v->value));
-                // Update distance
-                dist[v->value] = d + e;
-                // Add new edge to queue
-                queue.insert(std::pair<int, int>(dist[v->value], v->value));
+        for (std::map<Vertex *, Edge>::iterator it = graph->vertices[v]->adjacency_list.begin(); it != graph->vertices[v]->adjacency_list.end(); it++)
+        {
+            if (d + it->second < dist[it->first->value])
+            {
+                s.erase(std::pair<int, int>(dist[it->first->value], it->first->value));
+                dist[it->first->value] = d + it->second;
+                s.insert(std::pair<int, int>(dist[it->first->value], it->first->value));
             }
         }
     }
@@ -588,60 +402,3 @@ void print_vector(std::vector<int> vector)
     }
 }
 
-void test(Graph *g1, int delta, int source, int threads)
-{
-    auto start = std::chrono::high_resolution_clock::now();
-    std::cout << "Running Dijkstra ..." << std::endl;
-    std::vector<int> result = dijkstra(g1, source);
-    auto end = std::chrono::high_resolution_clock::now();
-    auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Time: " << time.count() << "ms" << std::endl;
-
-    Delta_stepping delta_stepp(*g1, delta, source);
-    std::cout << "Running sequential delta-stepping ..." << std::endl;
-    ;
-    start = std::chrono::high_resolution_clock::now();
-    delta_stepp.exec();
-    end = std::chrono::high_resolution_clock::now();
-    time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Time: " << time.count() << "ms" << std::endl;
-
-    Delta_stepping_parallel delta_stepp_par(*g1, delta, source, threads);
-    std::cout << "Running parallel delta-stepping ..." << std::endl;
-    ;
-    start = std::chrono::high_resolution_clock::now();
-    delta_stepp_par.exec();
-    end = std::chrono::high_resolution_clock::now();
-    time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Time: " << time.count() << "ms" << std::endl;
-
-    std::cout << "Checking results ...";
-
-    int errors = 0;
-    for (int i = 0; i < delta_stepp_par.n_vertices; i++)
-    {
-        if (delta_stepp_par.distance[i] != result[i] or delta_stepp_par.distance[i] != result[i])
-        {
-            std::cout << "error when computing shortest path to " << i << std::endl;
-            std::cout << "parallel delta stepping gives " << delta_stepp_par.distance[i] << std::endl;
-            std::cout << "sequential delta stepping gives " << delta_stepp.distance[i] << std::endl;
-            std::cout << "Dijkstra gives " << result[i] << std::endl;
-            errors += 1;
-        }
-    }
-    std::cout << errors << " errors on " << delta_stepp_par.n_vertices << " tests.";
-}
-
-int main()
-{
-
-    // TODO : Load command line arguments
-    int delta = 20;
-    int source = 0;
-    int threads = 2;
-    std::cout << "Create Graph" << std::endl;
-    Graph *g1 = import_graph("test_graph.txt", true, true, false);
-    test(g1, delta, source, threads);
-
-    return 0;
-}
