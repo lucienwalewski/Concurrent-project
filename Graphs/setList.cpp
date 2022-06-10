@@ -77,13 +77,10 @@ bool SetList::add(std::pair<int, int> weight_vertex_pair) {
         }
         std::lock_guard<std::mutex> pred_lk(pred->lock);
         std::lock_guard<std::mutex> curr_lk(curr->lock);
-        // std::cout << 1 << std::endl;
         if (SetList::validate(pred, curr)) {
-            // std::cout << 3 << std::endl;
             if (weight == curr->weight && vertex == curr->vertex) {
                 return false;
             } else {
-                // std::cout << 2 << std::endl;
                 pred->next = std::make_shared<Node>(weight, vertex, curr);
                 return true;
             }
