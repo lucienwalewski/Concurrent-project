@@ -548,19 +548,7 @@ int main(int argc, char** argv)
     std::cout << "Creating Graph" << std::endl;
     Graph *g1 = import_graph("test_graph.txt", true, true, false);
     test(g1, delta, source, threads);
-
-    /*
-    std::cout << "dijkstra_parallel" << std::endl;
-    std::vector<int> dist = dijkstra_parallel(g1, 0, 2);
-    std::vector<int> dist2 = dijkstra(g1, 0);
-    for (int i = 0; i < dist.size(); i++)
-    {
-        if (dist[i] != dist2[i]) {
-            std::cout << "NOOOOOOO" << std::endl;
-        }
-    }
-    std::cout << "DONE" << std::endl;
-    */
+    
     return 0;
     
 }
