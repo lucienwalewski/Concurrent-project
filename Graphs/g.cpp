@@ -233,13 +233,11 @@ public:
                 }
             }
         }
-
-
     }
 
     int exec()
     {
-        // insert source in first bucket 
+        // insert source in first bucket
         this->distance[source] = 0;
         this->buckets[MAX].erase(source);
         this->buckets[0].insert(source);
@@ -251,7 +249,7 @@ public:
             std::set<int> R;
             while (!this->buckets[k].empty())
             {
-                // get set of low requests for the present bucket 
+                // get set of low requests for the present bucket
                 std::set<std::pair<int, int>> Req = find_requests(buckets[k], L);
                 R.insert(buckets[k].begin(), buckets[k].end());
                 buckets[k].clear();
@@ -268,7 +266,6 @@ public:
                 i++;
             }
             k = i;
-            
         }
 
         return 1;
@@ -320,17 +317,14 @@ public:
     Graph graph;
 };
 
-
-
-
-// Lock free parallelisation of our sequential algorithm, 
-// as presented in this paper : https://old.insight-centre.org/sites/default/files/publications/engineering_a_parallel_-stepping_algorithm.pdf 
+// Lock free parallelisation of our sequential algorithm,
+// as presented in this paper : https://old.insight-centre.org/sites/default/files/publications/engineering_a_parallel_-stepping_algorithm.pdf
 // Each vertex is randomly assigned to a thread index t.
-// We then find the requests running the find request function in parallel on every partition S_t of the set S, 
+// We then find the requests running the find request function in parallel on every partition S_t of the set S,
 // Where S_t is the intersection between S and the set of edge starting from a vertex assigned to thread t.
 
 // We then relax all the requests in parrallel, executing the function relaxRequest on every set S_r, where S_r
-// is the partition of S containing all the requests which destination is a vertex assigned to thread r. 
+// is the partition of S containing all the requests which destination is a vertex assigned to thread r.
 
 // This particular partitionning ensures no race condition.
 class Delta_stepping_parallel
@@ -381,7 +375,6 @@ public:
                 }
             }
         }
-
 
         // assign the vertices to the threads at random.
         this->thread_assignment = std::vector<std::set<int>>(thread_num);
@@ -465,9 +458,9 @@ public:
         std::set<std::pair<int, int>> Req;
         std::set<int> set_t[thread_num];
         std::set<std::pair<int, int>> Req_t[thread_num];
-        
+
         // Create the partition S_t of our set, where S_t is the intersection between S and the set of edge starting from a vertex assigned to thread t.
-        // To do this, we compute the intersection of our original set with the set of vertices assigned to S 
+        // To do this, we compute the intersection of our original set with the set of vertices assigned to S
         for (int t = 0; t < thread_num; t++)
         {
 
@@ -479,7 +472,6 @@ public:
                 }
             }
         }
-
 
         // execute the function find requests in parallel
         for (int t = 0; t < thread_num; t++)
@@ -515,11 +507,11 @@ public:
 
     void relaxRequests_parallel(std::set<std::pair<int, int>> Req)
     {
-        
+
         std::set<std::pair<int, int>> Req_t[thread_num];
         std::thread workers[thread_num];
-        // compute the sets S_r for every r, where S_r is the partition of S containing all the requests which destination is a vertex assigned to thread r. 
-        // As before, this is done by computing intersections 
+        // compute the sets S_r for every r, where S_r is the partition of S containing all the requests which destination is a vertex assigned to thread r.
+        // As before, this is done by computing intersections
         for (int t = 0; t < thread_num; t++)
         {
 
