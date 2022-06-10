@@ -363,6 +363,9 @@ public:
     Graph graph;
 };
 
+
+
+
 //////////////////////////////////////// DIJKSTRA SEQUENTIAL ////////////////////////////////////////
 std::vector<int> dijkstra(Graph *graph, int source) {
     // Vector of distances from source to every vertex
@@ -399,34 +402,34 @@ void relax_dijkstra(Graph *graph, int u, int d, std::vector<int> &dist, SetList 
     std::map<Vertex *, Edge>::iterator it = graph->vertices[u]->adjacency_list.begin();
     int it_position = t; // Keeps track of the position of the iterator
     advance(it, t);
-    while (true) {
+    while (it_position < graph->vertices[u]->adjacency_list.size()) {
         auto[v, e] = *it;
-        std::cout << "weight" << e << std::endl;
-        std::cout << "vertex" << v->value << std::endl;
+        // std::cout << " " << std::endl;
+        // std::cout << "vertex:: " << v->value << std::endl;
+        // std::cout << "weight:: " << e << std::endl;
         if (d + e < dist[v->value]) {
             // Remove old edge from queue
-            std::cout << "remove old edge from queue" << std::endl;
+            // std::cout << "remove old edge from queue" << std::endl;
             queue.remove(std::pair<int, int>(dist[v->value], v->value));
-            std::cout << "remove old edge from queue" << std::endl;
+            // std::cout << "remove old edge from queue" << std::endl;
             // Update distance
-            std::cout << "update distance" << std::endl;
+            // std::cout << "update distance" << std::endl;
             dist[v->value] = d + e;
-            std::cout << "update distance" << std::endl;
+            // std::cout << "update distance" << std::endl;
             // Add new edge to queue
-            std::cout << "add new edge to queue" << std::endl;
+            // std::cout << "add new edge to queue" << std::endl;
             queue.add(std::pair<int, int>(dist[v->value], v->value));
-            std::cout << "add new edge to queue" << std::endl;
+            // std::cout << "add new edge to queue" << std::endl;
         }
         if (it_position + thread_num < graph->vertices[u]->adjacency_list.size()) {
-            std::cout << "advance" << std::endl;
+            // std::cout << "advance" << std::endl;
             advance(it, thread_num);
-            std::cout << "finished advance" << std::endl;
+            // std::cout << "finished advance" << std::endl;
             it_position += thread_num;
         } else {
             break;
         }
     }
-
 }
 
 
@@ -437,22 +440,24 @@ std::vector<int> dijkstra_parallel(Graph *graph, int source, int thread_num) {
 
     // Initialise priority queue with thread-safe SetList
     SetList queue;
+    // queue.print();
     queue.add(std::pair<int, int>(dist[source], source));
 
     // Initialise workers
     std::thread workers[thread_num];
 
-    std::cout << "Dijkstra parallel" << std::endl;
+    // std::cout << "Dijkstra parallel" << std::endl;
     // While queue is not empty
     while (!queue.empty()) {
         // Get distance, vertex pair with minimum distance
+        // queue.print();
         auto[d, u] = queue.pop();
 
         // Relax all edges from u in parallel
         for (int t = 0; t < thread_num; t++) {
             workers[t] = std::thread(&relax_dijkstra, graph, u, d, std::ref(dist), std::ref(queue), t, thread_num);
         }
-        std::cout << "finished relax" << std::endl;
+        // std::cout << "finished relax" << std::endl;
         // Join the threads
         for (int t = 0; t < thread_num; t++) {
             workers[t].join();
@@ -473,11 +478,18 @@ void print_vector(std::vector<int> vector)
 
 void test(Graph *g1, int delta, int source, int threads)
 {
+    std::cout << "Running sequential Dijkstra ..." << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
-    std::cout << "Running Dijkstra ..." << std::endl;
-    std::vector<int> result = dijkstra(g1, source);
+    std::vector<int> result_seq = dijkstra(g1, source);
     auto end = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "Time: " << time.count() << "ms" << std::endl;
+
+    std::cout << "Running parallel Dijkstra ..." << std::endl;
+    start = std::chrono::high_resolution_clock::now();
+    std::vector<int> result_par = dijkstra_parallel(g1, source, threads);
+    end = std::chrono::high_resolution_clock::now();
+    time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "Time: " << time.count() << "ms" << std::endl;
 
     Delta_stepping delta_stepp(*g1, delta, source);
@@ -498,21 +510,30 @@ void test(Graph *g1, int delta, int source, int threads)
     time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     std::cout << "Time: " << time.count() << "ms" << std::endl;
 
-    std::cout << "Checking results ...";
+    std::cout << "Checking results ..." << std::endl;
 
     int errors = 0;
+    for (int i = 0; i < result_seq.size(); i++)
+    {
+        if (result_seq[i] != result_par[i]) {
+            std::cout << "error when computing shortest path to " << i << std::endl;
+            std::cout << "parallel Dijkstra gives " << result_par[i] << std::endl;
+            std::cout << "Dijkstra gives " << result_seq[i] << std::endl;
+            errors += 1;
+        }
+    }
     for (int i = 0; i < delta_stepp_par.n_vertices; i++)
     {
-        if (delta_stepp_par.distance[i] != result[i] or delta_stepp_par.distance[i] != result[i])
+        if (delta_stepp.distance[i] != result_seq[i] or delta_stepp_par.distance[i] != result_seq[i])
         {
             std::cout << "error when computing shortest path to " << i << std::endl;
             std::cout << "parallel delta stepping gives " << delta_stepp_par.distance[i] << std::endl;
             std::cout << "sequential delta stepping gives " << delta_stepp.distance[i] << std::endl;
-            std::cout << "Dijkstra gives " << result[i] << std::endl;
+            std::cout << "Dijkstra gives " << result_seq[i] << std::endl;
             errors += 1;
         }
     }
-    std::cout << errors << " errors on " << delta_stepp_par.n_vertices << " tests.";
+    std::cout << errors << " errors on " << delta_stepp_par.n_vertices << " tests." << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -528,5 +549,18 @@ int main(int argc, char** argv)
     Graph *g1 = import_graph("test_graph.txt", true, true, false);
     test(g1, delta, source, threads);
 
+    /*
+    std::cout << "dijkstra_parallel" << std::endl;
+    std::vector<int> dist = dijkstra_parallel(g1, 0, 2);
+    std::vector<int> dist2 = dijkstra(g1, 0);
+    for (int i = 0; i < dist.size(); i++)
+    {
+        if (dist[i] != dist2[i]) {
+            std::cout << "NOOOOOOO" << std::endl;
+        }
+    }
+    std::cout << "DONE" << std::endl;
+    */
     return 0;
+    
 }

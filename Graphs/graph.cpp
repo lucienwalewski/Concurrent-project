@@ -50,6 +50,9 @@ void Vertex::link_to(Vertex *vertex, Edge weight)
     }
 }
 
+
+
+
 //////////////////////////////////////// GRAPH CLASS ////////////////////////////////////////
 class Graph
 {
@@ -103,6 +106,9 @@ std::vector<int> Graph::neighbors(int value)
     }
     return list_neighbors;
 }
+
+
+
 
 //////////////////////////////////////// IMPORT GRAPH ////////////////////////////////////////
 Graph *import_graph(std::string filename, bool directed, bool weighted, bool zero_is_vertex)
