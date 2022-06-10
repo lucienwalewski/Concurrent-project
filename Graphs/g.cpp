@@ -549,29 +549,30 @@ public:
 };
 
 //////////////////////////////////////// DIJKSTRA SEQUENTIAL ////////////////////////////////////////
-std::vector<int> dijkstra(Graph *graph, int source)
-{
+std::vector<int> dijkstra(Graph *graph, int source) {
+    // Vector of distances from source to every vertex
     std::vector<int> dist(graph->num_vertices, INF);
-    std::set<std::pair<int, int>> s;
-
     dist[source] = 0;
-    s.insert(std::pair<int, int>(dist[source], source));
 
-    while (!s.empty())
-    {
-        std::pair<int, int> now = *s.begin();
-        s.erase(s.begin());
+    // Initialise priority queue
+    std::set<std::pair<int, int>> queue;
+    queue.insert(std::pair<int, int>(dist[source], source));
 
-        int d = now.first;
-        int v = now.second;
+    // While queue is not empty
+    while (!queue.empty()) {
+        // Get distance, vertex pair with minimum distance
+        auto[d, u] = *queue.begin();
+        queue.erase(queue.begin());
 
-        for (std::map<Vertex *, Edge>::iterator it = graph->vertices[v]->adjacency_list.begin(); it != graph->vertices[v]->adjacency_list.end(); it++)
-        {
-            if (d + it->second < dist[it->first->value])
-            {
-                s.erase(std::pair<int, int>(dist[it->first->value], it->first->value));
-                dist[it->first->value] = d + it->second;
-                s.insert(std::pair<int, int>(dist[it->first->value], it->first->value));
+        // Relax all edges from u
+        for (auto&[v, e] : graph->vertices[u]->adjacency_list) {
+            if (d + e < dist[v->value]) {
+                // Remove old edge from queue
+                queue.erase(std::pair<int, int>(dist[v->value], v->value));
+                // Update distance
+                dist[v->value] = d + e;
+                // Add new edge to queue
+                queue.insert(std::pair<int, int>(dist[v->value], v->value));
             }
         }
     }
