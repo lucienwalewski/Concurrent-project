@@ -17,7 +17,7 @@ g++ -std=c++17 -O3 -o main *.cpp
 
 ## run 
 ```
-./main source nb_threads delta 
+./main source number_of_threads delta 
 ```
 ## example 
 ```
