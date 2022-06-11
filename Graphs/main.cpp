@@ -14,7 +14,6 @@ void print_vector(std::vector<int> vector)
 }
 
 
-
 void test(Graph *g1, int delta, int source, int threads)
 {
     std::cout << "Running sequential Dijkstra ..." << std::endl;
@@ -74,7 +73,6 @@ void test(Graph *g1, int delta, int source, int threads)
     }
     std::cout << errors << " errors on " << delta_stepp_par.n_vertices << " tests." << std::endl;
 }
-
 
 
 int main(int argc, char** argv)

@@ -3,7 +3,11 @@
 #include "setList.hpp"
 #include "graph.hpp"
 
+#include <atomic>
+#include <mutex>
 #include <thread>
+#include <condition_variable>
+
 
 std::vector<int> dijkstra(Graph *graph, int source);
 
