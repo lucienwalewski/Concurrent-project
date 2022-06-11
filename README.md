@@ -3,7 +3,7 @@
 ## usage 
 ### compile
 ```
-g++  -g -O3 -o main main.cpp 
+g++  -O3 -o main main.cpp 
 ```
 ### run 
 ```
