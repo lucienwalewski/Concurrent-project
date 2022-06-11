@@ -1,15 +1,31 @@
-# concurrent project
+# Parallel SSCP
 
-## usage 
-### compile
-```
+This project contains the implementation of 4 single-source shortest paths algorithms and their running time and scalability comparison.
+The algorithms implemented are : 
+- Dijkstra
+- Parallel Dijkstra
+- Delta Stepping
+- Parallel Delta stepping 
+
+
+## Compilation
+
+```bash
 g++  -O3 -o main main.cpp 
 ```
-### run 
+
+
+## run 
 ```
 ./main source nb_threads delta 
 ```
-### example 
+## example 
 ```
 ./main 0 2 20
 ```
+
+
+## Authors
+- Alban Puech
+- Luca Bonengel
+- Lucien Walewski
