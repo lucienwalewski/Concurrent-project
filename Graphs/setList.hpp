@@ -3,10 +3,8 @@
 #include <atomic>
 #include <climits>
 #include <functional>
-#include <memory>
 #include <mutex>
 #include <string>
-#include <thread>
 #include <vector>
 #include <iostream>
 
