@@ -1,6 +1,7 @@
 
 #include "deltaStepping.hpp"
 
+//////////////////////////////////////// Delta_stepping ////////////////////////////////////////
 
 Delta_stepping::Delta_stepping(Graph graph, int delta, int source)
 {
@@ -122,6 +123,9 @@ void Delta_stepping::relaxRequests(std::set<std::pair<int, int>> Req)
 
 
 
+
+
+//////////////////////////////////////// Delta_stepping_parallel ////////////////////////////////////////
 
 Delta_stepping_parallel::Delta_stepping_parallel(Graph graph, int delta, int source, int thread_num)
 {

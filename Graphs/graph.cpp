@@ -75,6 +75,7 @@ std::vector<int> Graph::neighbors(int value)
 
 
 //////////////////////////////////////// IMPORT GRAPH ////////////////////////////////////////
+
 Graph *import_graph(std::string filename, bool directed, bool weighted, bool zero_is_vertex)
 {
     filename = "../text_files/" + filename;

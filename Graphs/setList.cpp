@@ -1,6 +1,7 @@
 #include "setList.hpp"
 
-//--------- Slightly modified lazy version of SetList from the lecture ---------
+
+//////////////////////////////////////// Node ////////////////////////////////////////
 
 Node::Node(long weight, long vertex, std::shared_ptr<Node> n) {
     this->weight = weight;
@@ -17,7 +18,7 @@ Node::Node(long weight, long vertex) {
 }
 
 
-
+//////////////////////////////////////// SetList ////////////////////////////////////////
 
 const long SetList::LOWEST_KEY = -1;
 const long SetList::LARGEST_KEY = LONG_MAX;

@@ -2,6 +2,7 @@
 
 
 //////////////////////////////////////// DIJKSTRA SEQUENTIAL ////////////////////////////////////////
+
 std::vector<int> dijkstra(Graph *graph, int source) {
     // Vector of distances from source to every vertex
     std::vector<int> dist(graph->num_vertices, INF);
@@ -33,6 +34,7 @@ std::vector<int> dijkstra(Graph *graph, int source) {
 }
 
 //////////////////////////////////////// DIJKSTRA PARALLEL ////////////////////////////////////////
+
 void relax_dijkstra(Graph *graph, int u, int d, std::vector<int> &dist, SetList &queue, int t, int thread_num) {
     std::map<Vertex *, Edge>::iterator it = graph->vertices[u]->adjacency_list.begin();
     int it_position = t; // Keeps track of the position of the iterator
