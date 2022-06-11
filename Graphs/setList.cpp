@@ -1,59 +1,35 @@
-#include <atomic>
-#include <climits>
-#include <functional>
-#include <memory>
-#include <mutex>
-#include <string>
-#include <thread>
-#include <vector>
+#include "setList.hpp"
 
-//--------- Slightly modified lazy version of SetList from the lecture --------
+//--------- Slightly modified lazy version of SetList from the lecture ---------
 
-class Node {
-public:
-    std::mutex lock;
-    long weight;
-    long vertex;
-    std::shared_ptr<Node> next;
-    bool marked;
-    Node(long weight, long vertex, std::shared_ptr<Node> n) {
-        this->weight = weight;
-        this->vertex = vertex;
-        this->next = n;
-        this->marked = false;
-    }
-    Node(long weight, long vertex) {
-        this->weight = weight;
-        this->vertex = vertex;
-        this->next = NULL; 
-        this->marked = false;
-    }
-};
+Node::Node(long weight, long vertex, std::shared_ptr<Node> n) {
+    this->weight = weight;
+    this->vertex = vertex;
+    this->next = n;
+    this->marked = false;
+}
 
-class SetList{
-    static const long LOWEST_KEY;
-    static const long LARGEST_KEY;
-    std::shared_ptr<Node> head;
+Node::Node(long weight, long vertex) {
+    this->weight = weight;
+    this->vertex = vertex;
+    this->next = NULL; 
+    this->marked = false;
+}
 
-    static bool validate(const std::shared_ptr<const Node> pred, const std::shared_ptr<const Node> curr);
 
-public:
-    SetList() { // constructor
-        head = std::make_shared<Node>(SetList::LOWEST_KEY, SetList::LOWEST_KEY);
-        head->next = std::make_shared<Node>(SetList::LARGEST_KEY, SetList::LARGEST_KEY);
-    }
-    ~SetList() {}; // destructor
-    bool add(std::pair<int, int> weight_vertex_pair);
-    bool remove(std::pair<int, int> weight_vertex_pair);
-    bool contains(std::pair<int, int> weight_vertex_pair);
-    bool empty();
-    void print();
-    std::pair<int, int> pop();
-};
+
 
 const long SetList::LOWEST_KEY = -1;
 const long SetList::LARGEST_KEY = LONG_MAX;
- 
+
+SetList::SetList() { // constructor
+    head = std::make_shared<Node>(SetList::LOWEST_KEY, SetList::LOWEST_KEY);
+    head->next = std::make_shared<Node>(SetList::LARGEST_KEY, SetList::LARGEST_KEY);
+}
+
+SetList::~SetList() {
+}
+
 bool SetList::validate(std::shared_ptr<const Node> pred, std::shared_ptr<const Node> curr) {
   return (!pred->marked) && (!curr->marked) && (pred->next == curr);
 }

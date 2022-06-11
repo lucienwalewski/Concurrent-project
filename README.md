@@ -11,7 +11,7 @@ The algorithms implemented are :
 ## Compilation
 
 ```bash
-g++  -O3 -o main main.cpp 
+g++ -std=c++17 -O3 -o main *.cpp
 ```
 
 

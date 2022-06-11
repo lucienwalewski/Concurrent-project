@@ -1,39 +1,11 @@
-#include <vector>
-#include <iostream>
-#include <algorithm>
-#include <atomic>
-#include <mutex>
-#include <thread>
-#include <condition_variable>
-#include <queue>
-#include <set>
-#include <map>
-#include <limits>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <chrono>
-
-using namespace std;
-
-#define INF std::numeric_limits<int>::max()
-
-typedef int Edge;
+#include "graph.hpp"
 
 //////////////////////////////////////// VERTEX CLASS ////////////////////////////////////////
-class Vertex
+
+Vertex::Vertex(int x)
 {
-public:
-    int value;
-    std::map<Vertex *, Edge> adjacency_list;
-
-    Vertex(int x)
-    {
-        this->value = x;
-    }
-
-    void link_to(Vertex *vertex, Edge weight);
-};
+    this->value = x;
+}
 
 void Vertex::link_to(Vertex *vertex, Edge weight)
 {
@@ -54,28 +26,20 @@ void Vertex::link_to(Vertex *vertex, Edge weight)
 
 
 //////////////////////////////////////// GRAPH CLASS ////////////////////////////////////////
-class Graph
+
+Graph::Graph(){};
+
+Graph::Graph(int x)
 {
-public:
-    int num_vertices;
-    std::vector<Vertex *> vertices;
-    Graph(){};
-
-    Graph(int x)
+    this->num_vertices = x;
+    Vertex *vertex;
+    for (int i = 0; i < this->num_vertices; i++)
     {
-        this->num_vertices = x;
-        Vertex *vertex;
-        for (int i = 0; i < this->num_vertices; i++)
-        {
-            vertex = new Vertex(i);
-            this->vertices.push_back(vertex);
-        }
-    };
+        vertex = new Vertex(i);
+        this->vertices.push_back(vertex);
+    }
+}
 
-    void add_edge(int from, int to, Edge weight);
-    Edge get_edge_value(int from, int to);
-    std::vector<int> neighbors(int value);
-};
 
 void Graph::add_edge(int from, int to, Edge weight)
 {
@@ -115,7 +79,7 @@ Graph *import_graph(std::string filename, bool directed, bool weighted, bool zer
 {
     filename = "../text_files/" + filename;
     const char *input = filename.c_str();
-    ifstream file(input);
+    std::ifstream file(input);
     Graph *graph;
     int num_vertices, num_edges;
     int u, v;
