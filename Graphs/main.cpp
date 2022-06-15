@@ -16,6 +16,7 @@ void print_vector(std::vector<int> vector)
 
 void test(Graph *g1, int delta, int source, int threads)
 {
+    // test
     std::cout << "Running sequential Dijkstra ..." << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
     std::vector<int> result_seq = dijkstra(g1, source);
