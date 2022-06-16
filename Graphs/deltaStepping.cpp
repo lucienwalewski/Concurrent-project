@@ -254,7 +254,7 @@ std::set<std::pair<int, int>> Delta_stepping_parallel::find_requests_parallel(st
     std::set<int> set_t[thread_num];
     std::set<std::pair<int, int>> Req_t[thread_num];
 
-    // Create the partition S_t of our set, where S_t is the intersection between S and the set of edge starting from a vertex assigned to thread t.
+    // Create the partition S_t of our set, where S_t is the intersection between S and the set of edges assigned to thread t.
     // To do this, we compute the intersection of our original set with the set of vertices assigned to S
     for (int t = 0; t < thread_num; t++)
     {
