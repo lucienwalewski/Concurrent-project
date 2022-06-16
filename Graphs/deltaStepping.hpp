@@ -36,7 +36,7 @@ public:
 // as presented in this paper : https://old.insight-centre.org/sites/default/files/publications/engineering_a_parallel_-stepping_algorithm.pdf
 // Each vertex is randomly assigned to a thread index t.
 // We then find the requests running the find request function in parallel on every partition S_t of the set S,
-// Where S_t is the intersection between S and the set of edge starting from a vertex assigned to thread t.
+// Where S_t is the intersection between S and the set of edges assigned to thread t.
 
 // We then relax all the requests in parrallel, executing the function relaxRequest on every set S_r, where S_r
 // is the partition of S containing all the requests which destination is a vertex assigned to thread r.
