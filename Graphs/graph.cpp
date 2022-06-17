@@ -23,8 +23,6 @@ void Vertex::link_to(Vertex *vertex, Edge weight)
 }
 
 
-
-
 //////////////////////////////////////// GRAPH CLASS ////////////////////////////////////////
 
 Graph::Graph(){};
@@ -39,7 +37,6 @@ Graph::Graph(int x)
         this->vertices.push_back(vertex);
     }
 }
-
 
 void Graph::add_edge(int from, int to, Edge weight)
 {
@@ -72,8 +69,6 @@ std::vector<int> Graph::neighbors(int value)
 }
 
 
-
-
 //////////////////////////////////////// IMPORT GRAPH ////////////////////////////////////////
 
 Graph *import_graph(std::string filename, bool directed, bool weighted, bool zero_is_vertex)
@@ -84,7 +79,6 @@ Graph *import_graph(std::string filename, bool directed, bool weighted, bool zer
     Graph *graph;
     int num_vertices, num_edges;
     int u, v;
-    // int max;
     if (file >> num_vertices >> num_edges)
     {
         graph = new Graph(num_vertices);
@@ -122,14 +116,6 @@ Graph *import_graph(std::string filename, bool directed, bool weighted, bool zer
             for (int i = 0; i < num_edges; i++)
             {
                 file >> u >> v;
-                /*
-                if (u > max) {
-                    max = u;
-                }
-                if (v > max) {
-                    max = v;
-                }
-                */
                 // std::cout << u << " " << v << std::endl;
                 if (zero_is_vertex)
                 {
@@ -153,7 +139,94 @@ Graph *import_graph(std::string filename, bool directed, bool weighted, bool zer
             }
         }
     }
-    // std::cout << max << std::endl;
     file.close();
     return graph;
 }
+
+
+
+
+void find_max(std::string filename, bool weighted)
+{
+    filename = "../text_files/" + filename;
+    const char *input = filename.c_str();
+    std::ifstream file(input);
+    int num_vertices, num_edges;
+    int u, v;
+    int max = 0;
+    if (file >> num_vertices >> num_edges)
+    {
+        if (weighted)
+        {
+            int w;
+            for (int i = 0; i < num_edges; i++)
+            {
+                file >> u >> v >> w;
+                if (u > max) {
+                    max = u;
+                }
+                if (v > max) {
+                    max = v;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < num_edges; i++)
+            {
+                file >> u >> v;
+                if (u > max) {
+                    max = u;
+                }
+                if (v > max) {
+                    max = v;
+                }
+            }
+        }
+    }
+    std::cout << max << std::endl;
+    file.close();
+}
+
+
+
+
+int compute_max_degree(std::string filename, bool directed, bool weighted) {
+    filename = "../text_files/" + filename;
+    const char *input = filename.c_str();
+    std::ifstream file(input);
+    int num_vertices, num_edges;
+    int u, v;
+    file >> num_vertices >> num_edges;
+    int a = num_vertices;
+    std::vector<int> degree_values(a + 1, 0);
+    if (weighted)
+    {
+        int w;
+        for (int i = 0; i < num_edges; i++)
+        {
+            file >> u >> v >> w;
+            degree_values[u] += 1;
+            if (!directed) {
+                degree_values[v] += 1;
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < num_edges; i++)
+        {
+            file >> u >> v;
+            degree_values[u] += 1;
+            if (!directed) {
+                degree_values[v] += 1;
+            }
+        }
+    }
+    int max = *max_element(degree_values.begin(), degree_values.end());
+    std::cout << "Max degree : " << max << std::endl;
+    std::cout << max << std::endl;
+    file.close();
+    return max;
+}
+

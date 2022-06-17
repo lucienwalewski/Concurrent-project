@@ -43,3 +43,7 @@ public:
 
 
 Graph *import_graph(std::string filename, bool directed, bool weighted, bool zero_is_vertex);
+
+void find_max(std::string filename, bool weighted);
+
+int compute_max_degree(std::string filename, bool directed, bool weighted);
