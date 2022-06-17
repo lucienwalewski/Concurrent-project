@@ -1,6 +1,6 @@
 # Parallel SSCP
 
-This project contains the implementation of sequential and parallel single-source shortest paths algorithms.
+This project contains the implementation of sequential and parallel single-source shortest path algorithms.
 The implemented algorithms are : 
 - Dijkstra
 - Parallel Dijkstra
@@ -21,7 +21,8 @@ g++ -std=c++17 -O3 -o main *.cpp
 ./main source number_of_threads delta 
 ```
 
-- ```source``` corresponds to the number of the source vertex from whoch we will run the shortest paths algorithms
+- ```source``` corresponds to the number of the source vertex from whoch we want to run the shortest path algorithms
+- ```number_of_threads``` corresponds to the number of threads we will use for the parallel algorithms
 - ```delta``` is the value one wants to use for the two Delta Stepping algorithms
 
 ## example 
