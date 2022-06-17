@@ -1,4 +1,3 @@
-
 #include "deltaStepping.hpp"
 
 //////////////////////////////////////// Delta_stepping ////////////////////////////////////////
@@ -118,11 +117,6 @@ void Delta_stepping::relaxRequests(std::set<std::pair<int, int>> Req)
         relax(v->first, v->second);
     }
 }
-
-
-
-
-
 
 
 //////////////////////////////////////// Delta_stepping_parallel ////////////////////////////////////////

@@ -1,6 +1,5 @@
 #include "dijkstra.hpp"
 
-
 //////////////////////////////////////// DIJKSTRA SEQUENTIAL ////////////////////////////////////////
 
 std::vector<int> dijkstra(Graph *graph, int source) {
@@ -113,8 +112,6 @@ std::vector<int> dijkstra_parallel(Graph *graph, int source, int thread_num) {
 
 
 //////////////////////////////////////// DIJKSTRA PARALLEL USING BST ////////////////////////////////////////
-
-
 
 void relax_dijkstra_BST(Graph *graph, int u, int d, std::vector<int> &dist, FineBST &tree, int t, int thread_num) {
     std::map<Vertex *, Edge>::iterator it = graph->vertices[u]->adjacency_list.begin();
