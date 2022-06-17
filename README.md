@@ -7,7 +7,7 @@ The implemented algorithms are :
 - Delta Stepping
 - Parallel Delta stepping 
 
-In order to test our code, go into the Graphs folder in your terminal and run the following command lines.
+In order to test our code, go into the ```Graphs``` folder in your terminal and run the following command lines.
 
 ## Compilation
 
@@ -22,13 +22,13 @@ g++ -std=c++17 -O3 -o main *.cpp
 ```
 
 - ```source``` corresponds to the number of the source vertex from whoch we will run the shortest paths algorithms
-- ```delta``` is relevant for the two Delta Stepping algorithms
+- ```delta``` is the value one wants to use for the two Delta Stepping algorithms
 
 ## example 
 ```
 ./main 0 2 20
 ```
-
+We start the shortest paths algorithms from the vertex labeled by ```0``` using two threads for the parallel algorithms and the value of ```delta``` is set to twenty.
 
 ## Authors
 - Alban Puech
