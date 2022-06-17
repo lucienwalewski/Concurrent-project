@@ -29,7 +29,7 @@ g++ -std=c++17 -O3 -o main *.cpp
 ```
 ./main 0 2 20
 ```
-In the above example, we start the shortest path algorithms from the vertex labeled by ```0``` using two threads for the parallel algorithms and the value of ```delta``` is set to twenty.
+In the above example, we start the shortest path algorithms from the vertex labeled by ```0```. We use two threads for the parallel algorithms and the value of ```delta``` is set to twenty.
 
 ## Authors
 - Alban Puech
