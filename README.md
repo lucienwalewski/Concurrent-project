@@ -16,7 +16,7 @@ g++ -std=c++17 -O3 -o main *.cpp
 ```
 
 
-## run 
+## Run 
 ```
 ./main source number_of_threads delta 
 ```
@@ -25,7 +25,7 @@ g++ -std=c++17 -O3 -o main *.cpp
 - ```number_of_threads``` corresponds to the number of threads we will use for the parallel algorithms
 - ```delta``` is the value one wants to use for the two Delta Stepping algorithms
 
-## example 
+## Example 
 ```
 ./main 0 2 20
 ```
