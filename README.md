@@ -21,7 +21,7 @@ g++ -std=c++17 -O3 -o main *.cpp
 ./main source number_of_threads delta 
 ```
 
-- source corresponds to the number of the source vertex from whoch we will run the shortest paths algorithms
+- ```source``` corresponds to the number of the source vertex from whoch we will run the shortest paths algorithms
 - delta is relevant for the two Delta Stepping algorithms
 
 ## example 
