@@ -106,5 +106,4 @@ int main(int argc, char** argv)
     test(g1, delta, source, threads);
     
     return 0;
-    
 }
