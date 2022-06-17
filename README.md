@@ -1,12 +1,13 @@
 # Parallel SSCP
 
-This project contains the implementation of 4 single-source shortest paths algorithms and their running time and scalability comparison.
-The algorithms implemented are : 
+This project contains the implementation of sequential and parallel single-source shortest paths algorithms.
+The implemented algorithms are : 
 - Dijkstra
 - Parallel Dijkstra
 - Delta Stepping
 - Parallel Delta stepping 
 
+In order to test our code, go into the Graphs folder in your terminal and run the following command lines.
 
 ## Compilation
 
