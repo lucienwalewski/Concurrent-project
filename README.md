@@ -1,6 +1,6 @@
 # Parallel SSCP
 
-This project contains the implementation of sequential and parallel single-source shortest path algorithms.
+This project contains sequential and parallel single-source shortest path algorithms.
 The implemented algorithms are:
 - Dijkstra
 - Parallel Dijkstra
