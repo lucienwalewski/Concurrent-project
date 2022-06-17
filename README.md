@@ -7,9 +7,10 @@ The implemented algorithms are:
 - Delta Stepping
 - Parallel Delta stepping 
 
-In order to test our code, go into the ```Graphs``` folder in your terminal and run the following command lines.
 
 ## Compilation
+
+In order to test our code, go into the ```Graphs``` folder in your terminal and run the following command lines.
 
 ```bash
 g++ -std=c++17 -O3 -o main *.cpp
